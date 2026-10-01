@@ -3,9 +3,8 @@ import WelkomModal from "./WelkomModal";
 export default function HomePage() {
   return (
     <main>
-      <WelkomModal/>
+      <WelkomModal />
       <h1>Vensters Veluws Verleden</h1>
-
       <div className="grid">
         <div className="card">
           <h2>Oog in oog met de Romeinen</h2>

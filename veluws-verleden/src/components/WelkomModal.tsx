@@ -1,30 +1,30 @@
 "use client";
-
+ 
 import { useEffect, useState } from "react";
-
+ 
 export default function WelkomModal() {
     const [open, setOpen] = useState(false);
-
+ 
     useEffect(() => {
         if (!sessionStorage.getItem("welkomGezien")) {
             setOpen(true);
         }
     }, []);
-
+ 
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "";
         return () => {
             document.body.style.overflow = "";
         };
     }, [open]);
-
+ 
     function sluiten() {
         sessionStorage.setItem("welkomGezien", "true");
         setOpen(false);
     }
-    
+   
     if (!open) return null;
-
+ 
     return (
     <div
       role="dialog"
