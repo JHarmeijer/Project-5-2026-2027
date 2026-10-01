@@ -1,6 +1,9 @@
+import WelkomModal from "./WelkomModal";
+
 export default function HomePage() {
   return (
     <main>
+      <WelkomModal/>
       <h1>Vensters Veluws Verleden</h1>
 
       <div className="grid">
