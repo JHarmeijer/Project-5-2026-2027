@@ -1,5 +1,5 @@
-import WelkomModal from "./WelkomModal";
-import SchoolplaatViewer from "./SchoolplaatViewer";
+import WelkomModal from "../modals/WelkomModal";
+import SchoolplaatViewer from "../map/SchoolplaatViewer";
 
 export default function HomePage() {
   return (
