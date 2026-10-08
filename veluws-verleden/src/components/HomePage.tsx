@@ -1,4 +1,5 @@
 import WelkomModal from "./WelkomModal";
+import SchoolplaatViewer from "./SchoolplaatViewer";
 
 export default function HomePage() {
   return (
@@ -6,9 +7,8 @@ export default function HomePage() {
       <h1>Vensters Veluws Verleden</h1>
       <div className="grid">
         <div className="card">
-          <a href="https://brillenmannetje.nl/work/veluwsverleden/ROM_ABV_KLEUR_DEF.tif">
             <h2>Oog in oog met de Romeinen</h2>
-          </a>
+            <SchoolplaatViewer src="/api/schoolplaat" />
           <WelkomModal />
         </div>
       </div>
