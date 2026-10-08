@@ -217,6 +217,25 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
     zoomNaar(targetRef.current.s * factor, 0, 0);
   }
 
+  function focusHotspot(h: Hotspot) {
+    setHint(false);
+    setActief(h);
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const mx = rect.width * (h.x / 100) - rect.width / 2;
+    const my = rect.height * (h.y / 100) - rect.height / 2;
+    const doelSchaal = Math.min(MAX_SCALE, Math.max(2, 2.5));
+    zoomNaar(doelSchaal, mx, my);
+  }
+
+  function closeHotspot() {
+    setActief(null);
+    animeerNaar(1, { x: 0, y: 0 });
+  }
+
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     setHint(false);
     stopAnim(); // onderbreek een lopende zoomanimatie
@@ -358,7 +377,7 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
                 type="button"
                 aria-label={h.titel}
                 onPointerDown={(e) => e.stopPropagation()}
-                onClick={() => setActief(h)}
+                onClick={() => focusHotspot(h)}
                 style={{
                   position: "absolute",
                   left: `${h.x}%`,
@@ -420,37 +439,59 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
         )}
       </div>
 
-      {/* hotspot-info rechtsonder (zelfde in elke stand) */}
+      {/* hotspot-info in een popup bovenop de kaart */}
       {actief && (
         <div
+          onClick={closeHotspot}
           style={{
-            ...overlayStijl,
-            right: 12,
-            bottom: 12,
-            maxWidth: "min(360px, 45%)",
-            padding: "0.75rem 2.5rem 0.75rem 1rem",
-            background: "rgba(0, 0, 0, 0.75)",
+            position: "absolute",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 20,
+            padding: "1rem",
           }}
         >
-          <button
-            type="button"
-            onClick={() => setActief(null)}
-            aria-label="Info sluiten"
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="hotspot-titel"
+            onClick={(event) => event.stopPropagation()}
             style={{
-              position: "absolute",
-              top: 4,
-              right: 6,
-              border: "none",
-              background: "transparent",
-              color: "inherit",
-              fontSize: "1.4rem",
-              cursor: "pointer",
+              ...overlayStijl,
+              position: "relative",
+              width: "min(420px, 90%)",
+              maxWidth: "420px",
+              padding: "1.25rem 2.5rem 1rem 1rem",
+              background: "rgba(15, 23, 42, 0.9)",
+              boxShadow: "0 18px 50px rgba(0, 0, 0, 0.35)",
             }}
           >
-            &times;
-          </button>
-          <h3 style={{ margin: "0 0 0.25rem" }}>{actief.titel}</h3>
-          <p style={{ margin: 0 }}>{actief.tekst}</p>
+            <button
+              type="button"
+              onClick={closeHotspot}
+              aria-label="Info sluiten"
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 10,
+                border: "none",
+                background: "transparent",
+                color: "white",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                lineHeight: 1,
+              }}
+            >
+              &times;
+            </button>
+            <h3 id="hotspot-titel" style={{ margin: "0 0 0.5rem", fontSize: "1.2rem" }}>
+              {actief.titel}
+            </h3>
+            <p style={{ margin: 0, lineHeight: 1.6 }}>{actief.tekst}</p>
+          </div>
         </div>
       )}
     </div>
