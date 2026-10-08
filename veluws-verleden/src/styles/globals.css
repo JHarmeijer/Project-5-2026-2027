@@ -1,0 +1,222 @@
+:root {
+  --bg: #f4efe7;
+  --panel: #fffdf9;
+  --panel-strong: #f1e6d6;
+  --card: #fffaf3;
+  --card-strong: #e5d7b8;
+  --ink: #1c1b1a;
+  --muted: #5c554d;
+  --border: rgba(62, 46, 25, 0.18);
+  --oak: #8e6a3b;
+  --sage: #657b68;
+  --sand: #d9c5a1;
+  --shadow: rgba(52, 38, 18, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(255, 248, 239, 0.9), rgba(244, 239, 231, 0.96)),
+    var(--bg);
+  color: var(--ink);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.page-shell {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--oak);
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 1.1;
+}
+
+.home-page {
+  padding-top: 2.5rem;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.slot-card {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--panel);
+  overflow: hidden;
+  box-shadow: 0 12px 28px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(72, 55, 32, 0.14);
+}
+
+.slot-button {
+  width: 100%;
+  display: block;
+  border: 0;
+  background: linear-gradient(135deg, #d9c49c 0%, #f1e6d6 100%);
+  padding: 0;
+  cursor: pointer;
+}
+
+.slot-image-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 190px;
+  color: #5b4323;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.slot-content {
+  padding: 1.1rem 1.1rem 1.4rem;
+}
+
+.slot-content h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.15rem;
+}
+
+.slot-content p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 27, 26, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.info-modal {
+  position: relative;
+  width: min(420px, 100%);
+  background: var(--panel);
+  border-radius: 20px;
+  padding: 2rem 1.5rem 1.5rem;
+  box-shadow: 0 28px 60px rgba(28, 27, 26, 0.22);
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.info-modal h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+
+.info-modal p {
+  margin: 0 0 1.4rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.9rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.primary-button,
+.back-link {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, var(--oak), #b68e52);
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button:hover,
+.back-link:hover {
+  transform: translateY(-1px);
+}
+
+.school-page {
+  padding-top: 2.25rem;
+}
+
+.school-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  gap: 1rem;
+}
+
+.back-link {
+  color: var(--oak);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .slots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header.school-header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}

@@ -17,132 +17,61 @@ export default function HomePage() {
   const [activeSlot, setActiveSlot] = useState<(typeof slots)[number] | null>(null);
 
   return (
-    <main style={{ padding: "2rem", maxWidth: 1200, margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "2rem", textAlign: "center" }}>Vensters Veluws Verleden</h1>
+    <main className="page-shell home-page">
+      <header className="page-header">
+        <p className="eyebrow">Veluws Verleden</p>
+        <h1>Vensters Veluws Verleden</h1>
+      </header>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      <section className="slots-grid" aria-label="Historische thema's">
         {slots.map((slot) => (
-          <article
-            key={slot.id}
-            style={{
-              border: "1px solid #dfe7f3",
-              borderRadius: 18,
-              background: "#fff",
-              overflow: "hidden",
-              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.06)",
-            }}
-          >
+          <article key={slot.id} className="slot-card">
             <button
               type="button"
               onClick={() => setActiveSlot(slot)}
               aria-label={`Open ${slot.title}`}
-              style={{
-                width: "100%",
-                border: "none",
-                background: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-                padding: 0,
-                cursor: "pointer",
-                display: "block",
-              }}
+              className="slot-button"
             >
-              <div
-                style={{
-                  height: 180,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#1e3a8a",
-                  fontWeight: 700,
-                  fontSize: "1.1rem",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                Afbeelding {slot.id}
-              </div>
+              <span className="slot-image-label">Afbeelding {slot.id}</span>
             </button>
 
-            <div style={{ padding: "1rem 1rem 1.25rem" }}>
-              <h2 style={{ margin: "0 0 0.5rem", fontSize: "1.1rem" }}>{slot.title}</h2>
-              <p style={{ margin: 0, color: "#374151", lineHeight: 1.5 }}>{slot.text}</p>
+            <div className="slot-content">
+              <h2>{slot.title}</h2>
+              <p>{slot.text}</p>
             </div>
           </article>
         ))}
-      </div>
+      </section>
 
       {activeSlot && (
-        <div
-          onClick={() => setActiveSlot(null)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.45)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: "1rem",
-          }}
-        >
+        <div className="modal-backdrop" onClick={() => setActiveSlot(null)}>
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="schoolplaat-popup-title"
+            className="info-modal"
             onClick={(event) => event.stopPropagation()}
-            style={{
-              width: "min(420px, 100%)",
-              background: "#fff",
-              borderRadius: 18,
-              padding: "2rem 1.5rem 1.5rem",
-              boxShadow: "0 25px 60px rgba(15, 23, 42, 0.2)",
-              textAlign: "center",
-            }}
           >
             <button
               type="button"
               onClick={() => setActiveSlot(null)}
               aria-label="Popup sluiten"
-              style={{
-                position: "absolute",
-                top: 10,
-                right: 12,
-                border: "none",
-                background: "transparent",
-                fontSize: "1.5rem",
-                cursor: "pointer",
-                color: "#1f2937",
-              }}
+              className="modal-close"
             >
               &times;
             </button>
 
-            <h2 id="schoolplaat-popup-title" style={{ margin: "0 0 0.75rem" }}>
-              {activeSlot.title}
-            </h2>
-            <p style={{ margin: "0 0 1.25rem", color: "#374151", lineHeight: 1.6 }}>
+            <h2 id="schoolplaat-popup-title">{activeSlot.title}</h2>
+            <p>
               Je hebt een locatie geselecteerd op de schoolplaat. Klik hieronder om de interactieve
               kaart te laden en meer te ontdekken over dit deel van de Veluwse geschiedenis.
             </p>
             <button
               type="button"
+              className="primary-button"
               onClick={() => {
                 setActiveSlot(null);
                 void router.push("/schoolplaat");
-              }}
-              style={{
-                background: "#2563eb",
-                color: "#fff",
-                border: "none",
-                borderRadius: 10,
-                padding: "0.8rem 1.5rem",
-                fontSize: "1rem",
-                cursor: "pointer",
-                fontWeight: 600,
               }}
             >
               Laad de plaat in
