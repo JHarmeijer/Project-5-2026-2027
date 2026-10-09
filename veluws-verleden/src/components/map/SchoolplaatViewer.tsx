@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 type Hotspot = { id: string; x: number; y: number; titel: string; tekst: string };
 
@@ -30,7 +31,15 @@ const rondeKnopStijl: React.CSSProperties = {
   fontSize: "1.2rem",
 };
 
-export default function SchoolplaatViewer({ src }: { src: string }) {
+export default function SchoolplaatViewer({
+  src,
+  terugHref,
+  terugLabel = "Terug naar overzicht",
+}: {
+  src: string;
+  terugHref?: string;
+  terugLabel?: string;
+}) {
   const [geladen, setGeladen] = useState(false);
   const [fout, setFout] = useState(false);
   const [scale, setScale] = useState(1);
@@ -227,8 +236,7 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
     const rect = el.getBoundingClientRect();
     const mx = rect.width * (h.x / 100) - rect.width / 2;
     const my = rect.height * (h.y / 100) - rect.height / 2;
-    const doelSchaal = Math.min(MAX_SCALE, Math.max(2, 2.5));
-    zoomNaar(doelSchaal, mx, my);
+    zoomNaar(2.5, mx, my);
   }
 
   function closeHotspot() {
@@ -305,7 +313,7 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
             left: 12,
             padding: "0.4rem 0.75rem",
             fontSize: "0.85rem",
-            maxWidth: "70%",
+            maxWidth: "55%",
             pointerEvents: "none",
           }}
         >
@@ -315,6 +323,26 @@ export default function SchoolplaatViewer({ src }: { src: string }) {
               ? "Even geduld!, De plaat wordt geladen..."
               : "Ctrl + scroll of knijp om te zoomen, sleep om te bewegen."}
         </div>
+      )}
+
+      {/* terug-link rechtsboven (zelfde in elke stand) */}
+      {terugHref && (
+        <Link
+          href={terugHref}
+          style={{
+            ...overlayStijl,
+            top: 12,
+            right: 12,
+            minHeight: 44,
+            padding: "0 1rem",
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            fontSize: "0.9rem",
+          }}
+        >
+          ← {terugLabel}
+        </Link>
       )}
 
       {/* plaat */}
