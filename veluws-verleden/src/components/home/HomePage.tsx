@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import gordijnBackground from "../../assets/gordijn.jpg";
 
 const slots = [
   { id: 1, title: "Romeins kamp", text: "Het begin van de Romeinse aanwezigheid in de Veluwe." },
@@ -17,7 +18,15 @@ export default function HomePage() {
   const [activeSlot, setActiveSlot] = useState<(typeof slots)[number] | null>(null);
 
   return (
-    <main className="page-shell home-page">
+    <main
+      className="page-shell home-page"
+      style={{
+        backgroundImage: `url(${gordijnBackground.src})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <header className="page-header">
         <p className="eyebrow">Veluws Verleden</p>
         <h1>Vensters Veluws Verleden</h1>
