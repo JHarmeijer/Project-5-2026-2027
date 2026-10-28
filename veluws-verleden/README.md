@@ -1,6 +1,8 @@
 # Veluws Verleden
 
-The app uses Next.js Pages Router. The homepage is implemented in `src/components/HomePage.tsx` and served at `/` through `src/pages/index.tsx`.
+The app uses the Next.js Pages Router. The homepage is implemented in `src/components/home/HomePage.tsx` and served at `/` through `src/pages/index.tsx`. The interactive schoolplate is at `/schoolplaat`.
+
+The shared Roman-inspired color palette is defined with `--roman-*` CSS variables in `src/styles/globals.css`.
 
 ## Development
 
@@ -10,6 +12,14 @@ npm run dev
 ```
 
 Open http://localhost:3000.
+
+## Tests
+
+The Molenspel rules are tested with Node's built-in test runner. Node 22.6 or newer is required for the TypeScript stripping flag.
+
+```bash
+npm test
+```
 
 ## Production
 

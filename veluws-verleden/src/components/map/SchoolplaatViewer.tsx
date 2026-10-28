@@ -1,19 +1,33 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-
-type Hotspot = { id: string; x: number; y: number; titel: string; tekst: string };
-
-const hotspots: Hotspot[] = [
-  { id: "kamp", x: 30, y: 40, titel: "Legerkamp", tekst: "Hier ligt een Romeins kamp." },
-  { id: "weg", x: 65, y: 55, titel: "Romeinse weg", tekst: "Een belangrijke verbindingsweg." },
-];
+import Molenspel from "../../games/Molenspel/Molenspel";
+import { romanPOIs } from "../../data/romanPOI";
+import type { POI } from "../../types/POI";
+import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 const MIN_SCALE = 1;
-const MAX_SCALE = 5;
+const MAX_SCALE = 10;
 const SMOOTHING = 0.2; // 0.1 = zachter/trager, 0.4 = sneller
 
 type View = { s: number; x: number; y: number };
+type ScreenOrientationWithLock = ScreenOrientation & {
+  lock?: (orientation: "landscape") => Promise<void>;
+  unlock?: () => void;
+};
+
+function subscribeFullscreen(callback: () => void) {
+  document.addEventListener("fullscreenchange", callback);
+  return () => document.removeEventListener("fullscreenchange", callback);
+}
+
+function getFullscreenAvailability() {
+  return document.fullscreenEnabled === true;
+}
+
+function getServerFullscreenAvailability() {
+  return false;
+}
 
 const overlayStijl: React.CSSProperties = {
   position: "absolute",
@@ -44,13 +58,23 @@ export default function SchoolplaatViewer({
   const [fout, setFout] = useState(false);
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [actief, setActief] = useState<Hotspot | null>(null);
+  const [actief, setActief] = useState<POI | null>(null);
   const [hint, setHint] = useState(true);
+  const [molenspelOpen, setMolenspelOpen] = useState(false);
+  const verhaalDialogRef = useRef<HTMLDivElement>(null);
+  const closeVerhaallijn = useCallback(() => setActief(null), []);
+  const closeMolenspel = useCallback(() => setMolenspelOpen(false), []);
+  useAccessibleDialog(Boolean(actief), closeVerhaallijn, verhaalDialogRef);
 
   // volledig scherm
   const wrapRef = useRef<HTMLDivElement>(null);
   const [volledig, setVolledig] = useState(false);
-  const [kanVolledig, setKanVolledig] = useState(false);
+  const [fullscreenMelding, setFullscreenMelding] = useState("");
+  const kanVolledig = useSyncExternalStore(
+    subscribeFullscreen,
+    getFullscreenAvailability,
+    getServerFullscreenAvailability,
+  );
 
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -165,8 +189,6 @@ export default function SchoolplaatViewer({
 
   // volledig scherm: beschikbaarheid en wijzigingen bijhouden
   useEffect(() => {
-    setKanVolledig(document.fullscreenEnabled === true);
-
     function onChange() {
       const aan = !!document.fullscreenElement;
       setVolledig(aan);
@@ -174,8 +196,10 @@ export default function SchoolplaatViewer({
       apply(1, { x: 0, y: 0 }); // begin opnieuw, want het kader verandert van grootte
       if (!aan) {
         try {
-          (screen.orientation as any).unlock?.();
-        } catch {}
+          (screen.orientation as ScreenOrientationWithLock).unlock?.();
+        } catch {
+          setFullscreenMelding("De schermoriëntatie kon niet worden hersteld.");
+        }
       }
     }
 
@@ -184,18 +208,31 @@ export default function SchoolplaatViewer({
   }, []);
 
   async function toggleVolledig() {
+    setFullscreenMelding("");
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch {
+        setFullscreenMelding("Volledig scherm kon niet worden gesloten.");
+      }
+      return;
+    }
+    const element = wrapRef.current;
+    if (!element) {
+      setFullscreenMelding("De schoolplaat is nog niet klaar voor volledig scherm.");
       return;
     }
     try {
-      await wrapRef.current?.requestFullscreen();
+      await element.requestFullscreen();
     } catch {
+      setFullscreenMelding("Volledig scherm kon niet worden geopend.");
       return;
     }
     try {
-      await (screen.orientation as any).lock("landscape"); // werkt alleen op Android
-    } catch {}
+      await (screen.orientation as ScreenOrientationWithLock).lock?.("landscape");
+    } catch {
+      setFullscreenMelding("Volledig scherm is geopend, maar schermrotatie kon niet worden vergrendeld.");
+    }
   }
 
   // scrollwiel-zoom (muis): alleen met Ctrl/Cmd, anders scrolt de pagina gewoon
@@ -226,22 +263,27 @@ export default function SchoolplaatViewer({
     zoomNaar(targetRef.current.s * factor, 0, 0);
   }
 
-  function focusHotspot(h: Hotspot) {
+  function openVerhaallijn(verhaallijn: POI, marker: HTMLButtonElement) {
+    setActief(verhaallijn);
     setHint(false);
-    setActief(h);
 
     const el = containerRef.current;
     if (!el) return;
 
+    stopAnim();
     const rect = el.getBoundingClientRect();
-    const mx = rect.width * (h.x / 100) - rect.width / 2;
-    const my = rect.height * (h.y / 100) - rect.height / 2;
-    zoomNaar(2.5, mx, my);
-  }
+    const markerRect = marker.getBoundingClientRect();
+    const huidigeWeergave = targetRef.current;
+    const volgendeSchaal = Math.min(MAX_SCALE, Math.max(2.5, huidigeWeergave.s * 1.5));
+    const markerX = markerRect.left + markerRect.width / 2 - rect.left - rect.width / 2;
+    const markerY = markerRect.top + markerRect.height / 2 - rect.top - rect.height / 2;
+    const lokaalX = (markerX - huidigeWeergave.x) / huidigeWeergave.s;
+    const lokaalY = (markerY - huidigeWeergave.y) / huidigeWeergave.s;
 
-  function closeHotspot() {
-    setActief(null);
-    animeerNaar(1, { x: 0, y: 0 });
+    animeerNaar(volgendeSchaal, {
+      x: -lokaalX * volgendeSchaal,
+      y: -lokaalY * volgendeSchaal,
+    });
   }
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
@@ -295,6 +337,7 @@ export default function SchoolplaatViewer({
   }
 
   return (
+    <>
     <div
       ref={wrapRef}
       style={{
@@ -398,31 +441,25 @@ export default function SchoolplaatViewer({
                 : { width: "100%", height: "auto", display: "block" }
             }
           />
-          {geladen &&
-            hotspots.map((h) => (
-              <button
-                key={h.id}
-                type="button"
-                aria-label={h.titel}
-                onPointerDown={(e) => e.stopPropagation()}
-                onClick={() => focusHotspot(h)}
-                style={{
-                  position: "absolute",
-                  left: `${h.x}%`,
-                  top: `${h.y}%`,
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  border: "2px solid white",
-                  background: "#2563eb",
-                  color: "white",
-                  cursor: "pointer",
-                  transform: `translate(-50%, -50%) scale(${1 / scale})`,
-                }}
-              >
-                i
-              </button>
-            ))}
+          {geladen && romanPOIs.map((verhaallijn, index) => (
+            <button
+              key={verhaallijn.id}
+              type="button"
+              className="school-map-poi"
+              data-poi-id={verhaallijn.id}
+              aria-label={`${index + 1}. ${verhaallijn.titel}`}
+              title={verhaallijn.titel}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => openVerhaallijn(verhaallijn, event.currentTarget)}
+              style={{
+                left: `${verhaallijn.x}%`,
+                top: `${verhaallijn.y}%`,
+                transform: `translate(-50%, -50%) scale(${1 / scale})`,
+              }}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -466,11 +503,25 @@ export default function SchoolplaatViewer({
           </button>
         )}
       </div>
+      {fullscreenMelding && (
+        <p
+          role="status"
+          style={{
+            ...overlayStijl,
+            left: 12,
+            bottom: 76,
+            padding: "0.5rem 0.75rem",
+            maxWidth: "min(28rem, calc(100% - 24px))",
+          }}
+        >
+          {fullscreenMelding}
+        </p>
+      )}
 
-      {/* hotspot-info in een popup bovenop de kaart */}
+      {/* Geselecteerde verhaallijn */}
       {actief && (
         <div
-          onClick={closeHotspot}
+          onClick={closeVerhaallijn}
           style={{
             position: "absolute",
             inset: 0,
@@ -483,9 +534,11 @@ export default function SchoolplaatViewer({
           }}
         >
           <div
+            ref={verhaalDialogRef}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="hotspot-titel"
+            aria-labelledby="verhaallijn-titel"
+            tabIndex={-1}
             onClick={(event) => event.stopPropagation()}
             style={{
               ...overlayStijl,
@@ -499,8 +552,8 @@ export default function SchoolplaatViewer({
           >
             <button
               type="button"
-              onClick={closeHotspot}
-              aria-label="Info sluiten"
+              onClick={closeVerhaallijn}
+              aria-label="Verhaallijn sluiten"
               style={{
                 position: "absolute",
                 top: 8,
@@ -515,13 +568,28 @@ export default function SchoolplaatViewer({
             >
               &times;
             </button>
-            <h3 id="hotspot-titel" style={{ margin: "0 0 0.5rem", fontSize: "1.2rem" }}>
+            <h3 id="verhaallijn-titel" style={{ margin: "0 0 0.5rem", fontSize: "1.2rem" }}>
               {actief.titel}
             </h3>
             <p style={{ margin: 0, lineHeight: 1.6 }}>{actief.tekst}</p>
+            {actief.id === "molenspel" && (
+              <button
+                type="button"
+                className="mill-secondary-button"
+                style={{ marginTop: "1rem" }}
+                onClick={() => {
+                  setActief(null);
+                  setMolenspelOpen(true);
+                }}
+              >
+                Speel het Molenspel
+              </button>
+            )}
           </div>
         </div>
       )}
+      {molenspelOpen && <Molenspel onClose={closeMolenspel} />}
     </div>
+    </>
   );
 }

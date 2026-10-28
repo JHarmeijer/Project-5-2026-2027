@@ -1,26 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 export default function WelkomModal() {
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeDialog = useCallback(() => setOpen(false), []);
+  useAccessibleDialog(open, closeDialog, dialogRef);
 
   return (
     <>
@@ -29,7 +15,7 @@ export default function WelkomModal() {
       </button>
       {open && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={closeDialog}
           style={{
             position: "fixed",
             inset: 0,
@@ -41,9 +27,11 @@ export default function WelkomModal() {
           }}
         >
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="welkom-titel"
+            tabIndex={-1}
             onClick={(event) => event.stopPropagation()}
             style={{
               position: "relative",
@@ -58,7 +46,7 @@ export default function WelkomModal() {
           >
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeDialog}
               aria-label="Popup sluiten"
               style={{
                 position: "absolute",
@@ -77,7 +65,7 @@ export default function WelkomModal() {
             <p>Hier staat wat extra info over de site.</p>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeDialog}
               style={{
                 marginTop: "1rem",
                 padding: "0.6rem 1.4rem",

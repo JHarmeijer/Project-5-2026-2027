@@ -1,23 +1,14 @@
-export const romanPOIs = [
-  {
-    id: 1,
-    title: "Romeinse legerkampen",
-    x: 20,
-    y: 35,
-    description: "Voorbeeldtekst..."
-  },
-  {
-    id: 2,
-    title: "Verdediging",
-    x: 40,
-    y: 22,
-    description: "Voorbeeldtekst..."
-  },
-  {
-    id: 3,
-    title: "Inrichting kamp",
-    x: 60,
-    y: 55,
-    description: "Voorbeeldtekst..."
-  }
+import type { POI } from "../types/POI";
+
+export const romanPOIs: POI[] = [
+  { id: "legerkampen", titel: "Romeinse legerkampen op de Veluwe", tekst: "Romeinse soldaten trokken door een groot rijk en bouwden op strategische plekken kampen om te verblijven en de omgeving te bewaken. Ook op de Veluwe zijn sporen gevonden die met Romeinse aanwezigheid te maken hebben. Archeologen onderzoeken zulke sporen om te ontdekken wie hier verbleven en wat zij deden.", x: 83, y: 30 },
+  { id: "verdediging", titel: "De verdediging van het legerkamp", tekst: "Een kamp moest soldaten beschermen. Een aarden wal, een greppel en stevige poorten konden indringers tegenhouden en maakten het kamp herkenbaar in het landschap. De vorm en bouw veranderden per plek en periode: archeologische sporen helpen onderzoekers te achterhalen hoe een kamp was verdedigd.", x: 61, y: 72 },
+  { id: "inrichting", titel: "De inrichting van het legerkamp", tekst: "Een Romeins kamp was vaak volgens een duidelijk plan ingericht, met wegen tussen de verschillende gebouwen. Er was ruimte om te slapen, voedsel en materiaal op te slaan en bevelen te geven. De inrichting hielp een grote groep soldaten samen te laten leven en werken.", x: 74, y: 48 },
+  { id: "kleding-uitrusting", titel: "Kleding en uitrusting van de Romeinen", tekst: "Een soldaat droeg kleding die paste bij het werk en het klimaat, met daaroverheen zijn militaire uitrusting. Een schild, helm en wapens beschermden hem tijdens gevechten; de uitrusting kon zwaar zijn en moest te voet worden meegenomen. Wat iemand precies droeg, verschilde per periode, functie en persoonlijke middelen.", x: 83, y: 40 },
+  { id: "romeins-leger", titel: "De samenstelling van het Romeins leger", tekst: "Het Romeinse leger bestond uit verschillende groepen soldaten met eigen taken. Naast legionairs dienden er hulptroepen, vaak afkomstig uit verschillende delen van het rijk. Ook waren er mensen nodig voor vervoer, voedsel, bouw en verzorging: een legerkamp was dus een gemeenschap van meer dan alleen strijders.", x: 43, y: 37 },
+  { id: "lokale-bevolking", titel: "De lokale bevolking, kleding en hoe ze woonden", tekst: "Lang voordat de Romeinen hier kwamen, woonden er al mensen op de Veluwe. Veel gemeenschappen leefden van landbouw en veeteelt en woonden in huizen die met hout en andere materialen uit de omgeving waren gebouwd. Kleding en dagelijks leven verschilden per plaats, tijd en welvaart; vondsten en bodemsporen geven daarvan aanwijzingen.", x: 43, y: 45 },
+  { id: "meloenkraal", titel: "De meloenkraal en andere vondsten", tekst: "Een meloenkraal is een opvallende kraal met ribbels, genoemd naar haar vorm. Kralen en andere voorwerpen uit opgravingen kunnen iets vertellen over vakmanschap, versiering en uitwisseling tussen mensen. De vindplaats en de laag waarin een voorwerp wordt gevonden helpen archeologen bepalen wat het ons over het verleden kan leren.", x: 38.5, y: 46 },
+  { id: "contact", titel: "Het contact tussen de Romeinen en de lokale bevolking", tekst: "De komst van het Romeinse leger bracht mensen uit verschillende werelden bij elkaar. Er kon contact zijn door handel, reizen, werk of militaire dienst, maar ook door spanningen en veranderingen in het dagelijks leven. Hoe dat contact precies verliep, verschilde per persoon en plaats; archeologische vondsten geven soms aanwijzingen.", x: 53, y: 45 },
+  { id: "molenspel", titel: "Het molenspel", tekst: "Speel het Molenspel tegen de robot of samen met een tweede speler.", x: 25, y: 76 },
+  { id: "landschap-dieren", titel: "Het landschap en de dieren", tekst: "Het landschap van de Veluwe bestond uit een afwisseling van bossen, open plekken, natte gebieden en hogere zandgronden. Mensen gebruikten wat de omgeving bood voor voedsel, bouwmateriaal en routes. Ook dieren leefden in dit landschap; hun aanwezigheid en leefgebied veranderden mee met de natuur en het gebruik van het land.", x: 58, y: 37 },
 ];
