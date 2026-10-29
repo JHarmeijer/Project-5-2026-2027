@@ -4,6 +4,7 @@ import Link from "next/link";
 import Molenspel from "../../games/Molenspel/Molenspel";
 import VondstenKoppelen from "../../games/VondstenKoppelen/VondstenKoppelen";
 import ArcheologenSpeurtocht from "../../games/ArcheologenSpeurtocht/ArcheologenSpeurtocht";
+import SchoolplaatPuzzel from "../../games/SchoolplaatPuzzel/SchoolplaatPuzzel";
 import Quiz from "../Quiz/Quiz";
 import { romanPOIs } from "../../data/romanPOI";
 import type { POI } from "../../types/POI";
@@ -67,6 +68,7 @@ export default function SchoolplaatViewer({
   const [quizOpen, setQuizOpen] = useState(false);
   const [koppelspelOpen, setKoppelspelOpen] = useState(false);
   const [speurtochtOpen, setSpeurtochtOpen] = useState(false);
+  const [puzzelOpen, setPuzzelOpen] = useState(false);
   const verhaalDialogRef = useRef<HTMLDivElement>(null);
   const resetSchoolplaatWeergave = useCallback(() => {
     animeerNaar(1, { x: 0, y: 0 });
@@ -89,6 +91,10 @@ export default function SchoolplaatViewer({
   }, [resetSchoolplaatWeergave]);
   const closeSpeurtocht = useCallback(() => {
     setSpeurtochtOpen(false);
+    resetSchoolplaatWeergave();
+  }, [resetSchoolplaatWeergave]);
+  const closePuzzel = useCallback(() => {
+    setPuzzelOpen(false);
     resetSchoolplaatWeergave();
   }, [resetSchoolplaatWeergave]);
   useAccessibleDialog(Boolean(actief), closeVerhaallijn, verhaalDialogRef);
@@ -538,6 +544,21 @@ export default function SchoolplaatViewer({
               >
                 <span aria-hidden="true">🔎</span>
               </button>
+              <button
+                type="button"
+                className="school-map-game-marker school-map-puzzle-marker"
+                aria-label="Speel de schoolplaatpuzzel"
+                title="Schoolplaatpuzzel"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => setPuzzelOpen(true)}
+                style={{
+                  left: "50%",
+                  top: "14%",
+                  transform: `translate(-50%, -50%) scale(${1 / scale})`,
+                }}
+              >
+                <span aria-hidden="true">🧩</span>
+              </button>
             </>
           )}
         </div>
@@ -675,6 +696,7 @@ export default function SchoolplaatViewer({
       {quizOpen && <Quiz onClose={closeQuiz} />}
       {koppelspelOpen && <VondstenKoppelen onClose={closeKoppelspel} />}
       {speurtochtOpen && <ArcheologenSpeurtocht onClose={closeSpeurtocht} />}
+      {puzzelOpen && <SchoolplaatPuzzel src={src} onClose={closePuzzel} />}
     </div>
     </>
   );

@@ -1,45 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import sharp from "sharp";
 
-const BRON = "https://brillenmannetje.nl/work/veluwsverleden/ROM_ABV_KLEUR_DEF.tif";
-const MAX_DOWNLOAD_BYTES = 256 * 1024 * 1024;
+const BRON = join(process.cwd(), "src", "assets", "Schoolplaat.jpg");
 const MAX_INPUT_PIXELS = 150_000_000;
 
 let cachedImage: Promise<Buffer> | null = null;
 
-async function leesBegrensdeResponse(response: Response) {
-  const contentLength = Number(response.headers.get("content-length"));
-  if (Number.isFinite(contentLength) && contentLength > MAX_DOWNLOAD_BYTES) {
-    throw new Error(`Schoolplaat is groter dan de limiet van ${MAX_DOWNLOAD_BYTES} bytes.`);
-  }
-  if (!response.body) throw new Error("De server heeft geen afbeeldingsdata teruggestuurd.");
-
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      total += value.byteLength;
-      if (total > MAX_DOWNLOAD_BYTES) {
-        await reader.cancel();
-        throw new Error(`Schoolplaat is groter dan de limiet van ${MAX_DOWNLOAD_BYTES} bytes.`);
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  return Buffer.concat(chunks);
-}
-
 async function laadSchoolplaat() {
   if (!cachedImage) {
     cachedImage = (async () => {
-      const response = await fetch(BRON, { signal: AbortSignal.timeout(20_000) });
-      if (!response.ok) throw new Error(`Ophalen schoolplaat mislukt: HTTP ${response.status}`);
-      const input = await leesBegrensdeResponse(response);
+      const input = await readFile(BRON);
       return sharp(input, { limitInputPixels: MAX_INPUT_PIXELS })
         .resize({ width: 5000, withoutEnlargement: true })
         .webp({ quality: 85 })
