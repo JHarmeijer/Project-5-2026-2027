@@ -15,7 +15,7 @@ Open http://localhost:3000.
 
 ## Tests
 
-The Molenspel rules are tested with Node's built-in test runner. Node 22.6 or newer is required for the TypeScript stripping flag.
+De Molenspel regels zijn getest met Node's built-in test runner. Node 22.6 of nieuwer is nodig for the TypeScript stripping flag.
 
 ```bash
 npm test

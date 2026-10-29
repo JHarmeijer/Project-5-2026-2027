@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Molenspel from "../../games/Molenspel/Molenspel";
+import Quiz from "../Quiz/Quiz";
 import { romanPOIs } from "../../data/romanPOI";
 import type { POI } from "../../types/POI";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
@@ -61,9 +62,23 @@ export default function SchoolplaatViewer({
   const [actief, setActief] = useState<POI | null>(null);
   const [hint, setHint] = useState(true);
   const [molenspelOpen, setMolenspelOpen] = useState(false);
+  const [quizOpen, setQuizOpen] = useState(false);
   const verhaalDialogRef = useRef<HTMLDivElement>(null);
-  const closeVerhaallijn = useCallback(() => setActief(null), []);
-  const closeMolenspel = useCallback(() => setMolenspelOpen(false), []);
+  const resetSchoolplaatWeergave = useCallback(() => {
+    animeerNaar(1, { x: 0, y: 0 });
+  }, []);
+  const closeVerhaallijn = useCallback(() => {
+    setActief(null);
+    resetSchoolplaatWeergave();
+  }, [resetSchoolplaatWeergave]);
+  const closeMolenspel = useCallback(() => {
+    setMolenspelOpen(false);
+    resetSchoolplaatWeergave();
+  }, [resetSchoolplaatWeergave]);
+  const closeQuiz = useCallback(() => {
+    setQuizOpen(false);
+    resetSchoolplaatWeergave();
+  }, [resetSchoolplaatWeergave]);
   useAccessibleDialog(Boolean(actief), closeVerhaallijn, verhaalDialogRef);
 
   // volledig scherm
@@ -441,13 +456,15 @@ export default function SchoolplaatViewer({
                 : { width: "100%", height: "auto", display: "block" }
             }
           />
-          {geladen && romanPOIs.map((verhaallijn, index) => (
+          {geladen && romanPOIs.map((verhaallijn) => (
             <button
               key={verhaallijn.id}
               type="button"
-              className="school-map-poi"
+              className={`school-map-poi${verhaallijn.id === "molenspel" ? " school-map-poi-game" : ""}`}
               data-poi-id={verhaallijn.id}
-              aria-label={`${index + 1}. ${verhaallijn.titel}`}
+              aria-label={verhaallijn.id === "molenspel"
+                ? "Speel het Molenspel"
+                : `Informatie: ${verhaallijn.titel}`}
               title={verhaallijn.titel}
               onPointerDown={(event) => event.stopPropagation()}
               onClick={(event) => openVerhaallijn(verhaallijn, event.currentTarget)}
@@ -457,9 +474,26 @@ export default function SchoolplaatViewer({
                 transform: `translate(-50%, -50%) scale(${1 / scale})`,
               }}
             >
-              {index + 1}
+              <span aria-hidden="true">{verhaallijn.id === "molenspel" ? "▶" : "i"}</span>
             </button>
           ))}
+          {geladen && (
+            <button
+              type="button"
+              className="school-map-quiz-marker"
+              aria-label="Start de schoolplaatquiz"
+              title="Schoolplaatquiz"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => setQuizOpen(true)}
+              style={{
+                left: "94%",
+                top: "88%",
+                transform: `translate(-50%, -50%) scale(${1 / scale})`,
+              }}
+            >
+              ?
+            </button>
+          )}
         </div>
       </div>
 
@@ -470,6 +504,8 @@ export default function SchoolplaatViewer({
           left: 12,
           bottom: 12,
           display: "flex",
+          flexWrap: "wrap",
+          maxWidth: "calc(100% - 24px)",
           gap: "0.5rem",
           padding: 6,
         }}
@@ -582,6 +618,7 @@ export default function SchoolplaatViewer({
                   setMolenspelOpen(true);
                 }}
               >
+                <span aria-hidden="true">▶ </span>
                 Speel het Molenspel
               </button>
             )}
@@ -589,6 +626,7 @@ export default function SchoolplaatViewer({
         </div>
       )}
       {molenspelOpen && <Molenspel onClose={closeMolenspel} />}
+      {quizOpen && <Quiz onClose={closeQuiz} />}
     </div>
     </>
   );
