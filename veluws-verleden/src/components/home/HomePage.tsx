@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import schoolplaatImage from "../../assets/Schoolplaat.jpg";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 const slots = [
@@ -25,32 +27,63 @@ export default function HomePage() {
   return (
     <main className="page-shell home-page">
       <header className="page-header">
-        <p className="eyebrow">Veluws Verleden</p>
-        <h1>Vensters Veluws Verleden</h1>
+        <p className="eyebrow">Verhalen uit de Veluwe</p>
+        <h1>Veluws Verleden</h1>
+        <p className="home-page-intro">
+          Ontdek de mensen, plaatsen en gebeurtenissen die het Veluwse landschap hebben gevormd.
+        </p>
       </header>
 
-      <section className="slots-grid" aria-label="Historische thema's">
-        {slots.map((slot) => (
-          <article key={slot.id} className="slot-card">
-            <button
-              type="button"
-              onClick={() => setActiveSlot(slot)}
-              aria-label={`Open ${slot.title}`}
-              className="slot-button"
-            >
-              <span className="slot-art" aria-hidden="true">
-                <span className="slot-art-column" />
-                <span className="slot-image-label">{romeinseCijfers[slot.id - 1]}</span>
-                <span className="slot-art-place">{slot.place || "Veluwe"}</span>
-              </span>
-            </button>
+      <section className="home-collection" aria-labelledby="vensters-title">
+        <div className="home-collection-heading">
+          <h2 id="vensters-title">Ontdek de vensters</h2>
+          <p>Kies een thema om het verhaal te bekijken.</p>
+        </div>
 
-            <div className="slot-content">
-              <h2>{slot.title}{slot.place && ` (${slot.place})`}</h2>
-              <p>{slot.text}</p>
-            </div>
-          </article>
-        ))}
+        <div className="slots-grid">
+          {slots.map((slot) => (
+            <article key={slot.id} className="slot-card">
+              <button
+                type="button"
+                onClick={() => setActiveSlot(slot)}
+                aria-label={`Open ${slot.title}`}
+                aria-haspopup="dialog"
+                className="slot-button"
+              >
+                <span
+                  className={`slot-art${slot.id === 3 ? " slot-art-schoolplaat" : ""}`}
+                  aria-hidden="true"
+                >
+                  {slot.id === 3 && (
+                    <>
+                      <Image
+                        className="slot-art-background"
+                        src={schoolplaatImage}
+                        alt=""
+                        fill
+                        sizes="(max-width: 720px) calc(100vw - 2rem), (max-width: 1200px) 50vw, 600px"
+                        quality={75}
+                        placeholder="blur"
+                      />
+                      <span className="slot-art-overlay" />
+                    </>
+                  )}
+                  <span className="slot-art-column" />
+                  <span className="slot-image-label">{romeinseCijfers[slot.id - 1]}</span>
+                  <span className="slot-art-place">{slot.place || "Veluwe"}</span>
+                </span>
+              </button>
+
+              <div className="slot-content">
+                {slot.beschikbaar && (
+                  <span className="slot-status">Interactieve schoolplaat</span>
+                )}
+                <h3>{slot.title}{slot.place && ` (${slot.place})`}</h3>
+                <p>{slot.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       {activeSlot && (
@@ -92,8 +125,8 @@ export default function HomePage() {
               </>
             ) : (
               <p>
-                De interactieve schoolplaat voor deze verhaallijn is nog niet beschikbaar.
-                De plaat die nu geopend kan worden gaat over de Romeinen in Ermelo.
+                Deze interactieve schoolplaat is nog niet beschikbaar. De schoolplaat over
+                de Romeinen in Ermelo is wel beschikbaar.
               </p>
             )}
           </div>

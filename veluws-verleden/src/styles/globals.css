@@ -130,6 +130,32 @@ a:focus-visible {
   letter-spacing: 0.015em;
 }
 
+.home-page-intro {
+  max-width: 42rem;
+  margin: 0.85rem auto 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.home-collection-heading {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.home-collection-heading h2 {
+  margin: 0;
+  color: var(--roman-wine);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+}
+
+.home-collection-heading p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .slots-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -137,6 +163,9 @@ a:focus-visible {
 }
 
 .slot-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
   border: 1px solid rgba(100, 43, 53, 0.18);
   border-radius: 6px 6px 16px 16px;
   background: var(--roman-marble);
@@ -150,16 +179,24 @@ a:focus-visible {
   box-shadow: 0 18px 34px rgba(47, 37, 27, 0.2);
 }
 
+.slot-card:focus-within {
+  box-shadow: 0 0 0 3px rgba(145, 61, 50, 0.32), 0 12px 28px var(--shadow);
+}
+
 .slot-button {
   width: 100%;
   display: block;
+  flex: 0 0 auto;
   border: 0;
   border-bottom: 3px solid var(--roman-bronze);
-  background:
-    linear-gradient(135deg, rgba(100, 43, 53, 0.12), transparent 52%),
-    linear-gradient(145deg, var(--roman-limestone), var(--roman-travertine) 55%, #c8d0bc);
   padding: 0;
   cursor: pointer;
+}
+
+.slot-button:focus-visible {
+  position: relative;
+  z-index: 2;
+  outline-offset: -5px;
 }
 
 .slot-art {
@@ -171,13 +208,36 @@ a:focus-visible {
   justify-content: center;
   gap: 0.3rem;
   overflow: hidden;
+  transition: filter 0.2s ease;
   background:
     repeating-linear-gradient(45deg, transparent 0 18px, rgba(100, 43, 53, 0.035) 18px 20px),
     linear-gradient(145deg, var(--roman-limestone), var(--roman-travertine) 55%, #c8d0bc);
 }
 
+.slot-button:hover .slot-art {
+  filter: saturate(1.08);
+}
+
+.slot-art-schoolplaat {
+  background: var(--roman-limestone);
+}
+
+.slot-art-background {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center 45%;
+}
+
+.slot-art-overlay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(rgba(41, 42, 40, 0.08), rgba(41, 42, 40, 0.18));
+}
+
 .slot-art::before {
   position: absolute;
+  z-index: 2;
   width: 128px;
   height: 128px;
   border: 1px solid rgba(100, 43, 53, 0.28);
@@ -190,6 +250,7 @@ a:focus-visible {
 
 .slot-art-column {
   position: absolute;
+  z-index: 2;
   right: 12%;
   bottom: -34px;
   width: 20px;
@@ -219,7 +280,7 @@ a:focus-visible {
 
 .slot-image-label {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,7 +297,11 @@ a:focus-visible {
 
 .slot-art-place {
   position: relative;
-  z-index: 1;
+  z-index: 3;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(100, 43, 53, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.88);
   color: var(--roman-wine);
   font-size: 0.8rem;
   font-weight: 700;
@@ -245,14 +310,28 @@ a:focus-visible {
 }
 
 .slot-content {
+  flex: 1;
   padding: 1.1rem 1.1rem 1.4rem;
 }
 
-.slot-content h2 {
+.slot-content h3 {
   margin: 0 0 0.55rem;
   font-size: 1.15rem;
   color: var(--roman-wine);
   font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.35;
+}
+
+.slot-status {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(89, 108, 80, 0.3);
+  border-radius: 999px;
+  background: rgba(89, 108, 80, 0.1);
+  color: #3e5037;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .slot-content p {
@@ -408,6 +487,19 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .home-page {
+    padding-top: 1.5rem;
+  }
+
+  .home-page .page-header {
+    margin-bottom: 2rem;
+    padding: 1.5rem 1rem 1.75rem;
+  }
+
+  .home-page-intro {
+    font-size: 1rem;
+  }
+
   .page-header.school-header {
     flex-direction: column;
     align-items: flex-start;
@@ -418,6 +510,35 @@ a:focus-visible {
     align-items: flex-start;
     flex-direction: column;
     gap: 1.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-shell {
+    width: calc(100% - 1.25rem);
+  }
+
+  .slots-grid {
+    gap: 1rem;
+  }
+
+  .slot-art {
+    min-height: 165px;
+  }
+
+  .slot-content {
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .slot-card,
+  .slot-art {
+    transition: none;
   }
 }
 
@@ -487,6 +608,38 @@ a:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 2px;
   background: #e6b82e;
+}
+
+.school-map-game-marker {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+  font-size: 1.2rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.school-map-matching-marker {
+  background: #642b35;
+}
+
+.school-map-archaeology-marker {
+  background: #287a3d;
+}
+
+.school-map-game-marker:hover,
+.school-map-game-marker:focus-visible {
+  z-index: 5;
+  outline: 3px solid #f3c969;
+  outline-offset: 2px;
+  filter: brightness(1.15);
 }
 
 @media (max-width: 600px) {
@@ -613,6 +766,210 @@ a:focus-visible {
 
 .quiz-primary-button:hover {
   background: #40533a;
+}
+
+.game-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(25, 28, 24, 0.72);
+}
+
+.game-menu {
+  position: relative;
+  width: min(540px, 100%);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+.game-menu h2 {
+  margin: 0 2rem 1.25rem 0;
+  color: var(--roman-wine);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.game-menu-option {
+  display: grid;
+  width: 100%;
+  min-height: 76px;
+  grid-template-columns: 2rem 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.7rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--roman-marble);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.game-menu-option:hover {
+  border-color: var(--roman-laurel);
+  background: #f0f3ec;
+}
+
+.game-menu-option > span:first-child {
+  font-size: 1.5rem;
+}
+
+.game-menu-option strong,
+.game-menu-option small {
+  display: block;
+}
+
+.game-menu-option small {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.matching-game {
+  width: min(850px, 100%);
+}
+
+.matching-game h2,
+.archaeology-game h2 {
+  margin-right: 2rem;
+}
+
+.matching-instructions {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.matching-board {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.5fr);
+  gap: 1rem;
+}
+
+.matching-items,
+.matching-targets {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+}
+
+.matching-item,
+.matching-target {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--roman-marble);
+  color: var(--ink);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.matching-item {
+  justify-content: flex-start;
+  cursor: grab;
+  font-weight: 700;
+}
+
+.matching-item.is-selected {
+  outline: 3px solid var(--roman-bronze);
+  outline-offset: 1px;
+}
+
+.matching-item.is-matched,
+.matching-target.is-matched {
+  border-color: var(--roman-laurel);
+  background: #eaf0e5;
+}
+
+.matching-item:disabled,
+.matching-target:disabled {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.matching-picture,
+.archaeology-picture {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--roman-travertine);
+  font-size: 1.8rem;
+}
+
+.matching-picture {
+  padding: 0.25rem;
+  object-fit: contain;
+}
+
+.matching-target {
+  width: 100%;
+  cursor: pointer;
+}
+
+.matching-number {
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--roman-limestone);
+  font-weight: 700;
+}
+
+.matching-check {
+  margin-left: auto;
+  color: var(--roman-laurel);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.matching-feedback {
+  min-height: 1.5rem;
+  margin: 1rem 0;
+  line-height: 1.5;
+}
+
+.archaeology-evidence {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--roman-travertine);
+}
+
+.archaeology-picture {
+  width: 4rem;
+  height: 4rem;
+  font-size: 2.3rem;
+}
+
+.archaeology-evidence h3 {
+  margin: 0 0 0.4rem;
+}
+
+.archaeology-evidence p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .mill-game-backdrop {
@@ -1010,5 +1367,22 @@ a:focus-visible {
 
   .mill-game-header {
     padding: 0 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .matching-board {
+    grid-template-columns: 1fr;
+  }
+
+  .matching-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .matching-item {
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
   }
 }

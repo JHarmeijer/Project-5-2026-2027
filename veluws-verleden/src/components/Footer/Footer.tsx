@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="site-footer-inner">
         <div className="site-footer-brand">
           <p className="site-footer-eyebrow">Veluws Verleden</p>
-          <p className="site-footer-title">Vensters Veluws Verleden</p>
+          <p className="site-footer-title">Veluws Verleden</p>
           <p className="site-footer-description">
             Ontdek de verhalen en geschiedenis van de Veluwe.
           </p>
