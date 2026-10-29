@@ -65,11 +65,9 @@ export default function SchoolplaatViewer({
   const [hint, setHint] = useState(true);
   const [molenspelOpen, setMolenspelOpen] = useState(false);
   const [quizOpen, setQuizOpen] = useState(false);
-  const [spelMenuOpen, setSpelMenuOpen] = useState(false);
   const [koppelspelOpen, setKoppelspelOpen] = useState(false);
   const [speurtochtOpen, setSpeurtochtOpen] = useState(false);
   const verhaalDialogRef = useRef<HTMLDivElement>(null);
-  const spelMenuRef = useRef<HTMLElement>(null);
   const resetSchoolplaatWeergave = useCallback(() => {
     animeerNaar(1, { x: 0, y: 0 });
   }, []);
@@ -93,9 +91,7 @@ export default function SchoolplaatViewer({
     setSpeurtochtOpen(false);
     resetSchoolplaatWeergave();
   }, [resetSchoolplaatWeergave]);
-  const closeSpelMenu = useCallback(() => setSpelMenuOpen(false), []);
   useAccessibleDialog(Boolean(actief), closeVerhaallijn, verhaalDialogRef);
-  useAccessibleDialog(spelMenuOpen, closeSpelMenu, spelMenuRef);
 
   // volledig scherm
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -520,8 +516,8 @@ export default function SchoolplaatViewer({
                 onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => setKoppelspelOpen(true)}
                 style={{
-                  left: "7%",
-                  top: "14%",
+                  left: "50%",
+                  top: "60%",
                   transform: `translate(-50%, -50%) scale(${1 / scale})`,
                 }}
               >
@@ -535,8 +531,8 @@ export default function SchoolplaatViewer({
                 onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => setSpeurtochtOpen(true)}
                 style={{
-                  left: "26%",
-                  top: "14%",
+                  left: "25%",
+                  top: "30%",
                   transform: `translate(-50%, -50%) scale(${1 / scale})`,
                 }}
               >
@@ -582,9 +578,6 @@ export default function SchoolplaatViewer({
           style={knopStijl}
         >
           Reset
-        </button>
-        <button type="button" onClick={() => setSpelMenuOpen(true)} style={knopStijl}>
-          Spelletjes
         </button>
         {kanVolledig && (
           <button type="button" onClick={toggleVolledig} style={knopStijl}>
@@ -680,49 +673,6 @@ export default function SchoolplaatViewer({
       )}
       {molenspelOpen && <Molenspel onClose={closeMolenspel} />}
       {quizOpen && <Quiz onClose={closeQuiz} />}
-      {spelMenuOpen && (
-        <div className="game-menu-backdrop" onClick={closeSpelMenu}>
-          <section
-            ref={spelMenuRef}
-            className="game-menu"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="game-menu-title"
-            tabIndex={-1}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button type="button" className="quiz-close" onClick={closeSpelMenu} aria-label="Spelletjes sluiten">
-              &times;
-            </button>
-            <p className="eyebrow">Ontdek en speel</p>
-            <h2 id="game-menu-title">Kies een spelletje</h2>
-            <button
-              type="button"
-              className="game-menu-option"
-              onClick={() => {
-                closeSpelMenu();
-                setKoppelspelOpen(true);
-              }}
-            >
-              <span aria-hidden="true">🧩</span>
-              <span><strong>Vondsten koppelen</strong><small>Sleep de plaatjes naar de juiste omschrijving.</small></span>
-              <span aria-hidden="true">→</span>
-            </button>
-            <button
-              type="button"
-              className="game-menu-option"
-              onClick={() => {
-                closeSpelMenu();
-                setSpeurtochtOpen(true);
-              }}
-            >
-              <span aria-hidden="true">🔎</span>
-              <span><strong>Archeologische speurtocht</strong><small>Onderzoek vondsten en trek een voorzichtige conclusie.</small></span>
-              <span aria-hidden="true">→</span>
-            </button>
-          </section>
-        </div>
-      )}
       {koppelspelOpen && <VondstenKoppelen onClose={closeKoppelspel} />}
       {speurtochtOpen && <ArcheologenSpeurtocht onClose={closeSpeurtocht} />}
     </div>
