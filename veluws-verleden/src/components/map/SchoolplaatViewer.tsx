@@ -13,6 +13,7 @@ import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 const MIN_SCALE = 1;
 const MAX_SCALE = 10;
 const SMOOTHING = 0.2; // 0.1 = zachter/trager, 0.4 = sneller
+const GAME_MARKER = "▶";
 
 type View = { s: number; x: number; y: number };
 type ScreenOrientationWithLock = ScreenOrientation & {
@@ -373,6 +374,7 @@ export default function SchoolplaatViewer({
     <>
     <div
       ref={wrapRef}
+      className="school-map-viewer"
       style={{
         position: "relative",
         overflow: "hidden",
@@ -383,10 +385,9 @@ export default function SchoolplaatViewer({
       {/* status linksboven: laden, fout of hint (zelfde in elke stand) */}
       {(fout || !geladen || hint) && (
         <div
+          className="school-map-status"
           style={{
             ...overlayStijl,
-            top: 12,
-            left: 12,
             padding: "0.4rem 0.75rem",
             fontSize: "0.85rem",
             maxWidth: "55%",
@@ -397,7 +398,7 @@ export default function SchoolplaatViewer({
             ? "Het laden van de plaat is mislukt."
             : !geladen
               ? "Even geduld!, De plaat wordt geladen..."
-              : "Ctrl + scroll of knijp om te zoomen, sleep om te bewegen."}
+              : "Zoom met de knoppen of knijp; sleep om de plaat te verplaatsen."}
         </div>
       )}
 
@@ -405,10 +406,9 @@ export default function SchoolplaatViewer({
       {terugHref && (
         <Link
           href={terugHref}
+          className="school-map-back-link"
           style={{
             ...overlayStijl,
-            top: 12,
-            right: 12,
             minHeight: 44,
             padding: "0 1rem",
             display: "flex",
@@ -424,6 +424,7 @@ export default function SchoolplaatViewer({
       {/* plaat */}
       <div
         ref={containerRef}
+        className="school-map-canvas"
         style={{
           overflow: "hidden",
           position: "relative",
@@ -492,7 +493,7 @@ export default function SchoolplaatViewer({
                 transform: `translate(-50%, -50%) scale(${1 / scale})`,
               }}
             >
-              <span aria-hidden="true">{verhaallijn.id === "molenspel" ? "▶" : "i"}</span>
+              <span aria-hidden="true">{verhaallijn.id === "molenspel" ? GAME_MARKER : "i"}</span>
             </button>
           ))}
           {geladen && (
@@ -509,7 +510,7 @@ export default function SchoolplaatViewer({
                 transform: `translate(-50%, -50%) scale(${1 / scale})`,
               }}
             >
-              ?
+              <span aria-hidden="true">{GAME_MARKER}</span>
             </button>
           )}
           {geladen && (
@@ -527,7 +528,7 @@ export default function SchoolplaatViewer({
                   transform: `translate(-50%, -50%) scale(${1 / scale})`,
                 }}
               >
-                <span aria-hidden="true">🧩</span>
+                <span aria-hidden="true">{GAME_MARKER}</span>
               </button>
               <button
                 type="button"
@@ -542,7 +543,7 @@ export default function SchoolplaatViewer({
                   transform: `translate(-50%, -50%) scale(${1 / scale})`,
                 }}
               >
-                <span aria-hidden="true">🔎</span>
+                <span aria-hidden="true">{GAME_MARKER}</span>
               </button>
               <button
                 type="button"
@@ -553,11 +554,11 @@ export default function SchoolplaatViewer({
                 onClick={() => setPuzzelOpen(true)}
                 style={{
                   left: "50%",
-                  top: "14%",
+                  top: "20%",
                   transform: `translate(-50%, -50%) scale(${1 / scale})`,
                 }}
               >
-                <span aria-hidden="true">🧩</span>
+                <span aria-hidden="true">{GAME_MARKER}</span>
               </button>
             </>
           )}
@@ -566,10 +567,11 @@ export default function SchoolplaatViewer({
 
       {/* knoppen linksonder (zelfde in elke stand) */}
       <div
+        className="school-map-controls"
+        role="group"
+        aria-label="Bediening van de schoolplaat"
         style={{
           ...overlayStijl,
-          left: 12,
-          bottom: 12,
           display: "flex",
           flexWrap: "wrap",
           maxWidth: "calc(100% - 24px)",
@@ -609,11 +611,10 @@ export default function SchoolplaatViewer({
       {fullscreenMelding && (
         <p
           role="status"
+          className="school-map-fullscreen-message"
           style={{
             ...overlayStijl,
-            left: 12,
-            bottom: 76,
-            padding: "0.5rem 0.75rem",
+          padding: "0.5rem 0.75rem",
             maxWidth: "min(28rem, calc(100% - 24px))",
           }}
         >

@@ -409,6 +409,42 @@ a:focus-visible {
   padding-top: 2.25rem;
 }
 
+.school-map-viewer {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.school-map-status {
+  top: 12px;
+  left: 12px;
+}
+
+.school-map-back-link {
+  top: 12px;
+  right: 12px;
+}
+
+.school-map-controls {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: 12px;
+}
+
+.school-map-fullscreen-message {
+  bottom: 76px;
+  left: 12px;
+}
+
+.school-map-canvas {
+  position: relative;
+  overflow: hidden;
+}
+
+.school-map-viewer:fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
 .school-header {
   display: flex;
   align-items: center;
@@ -546,8 +582,8 @@ a:focus-visible {
   position: absolute;
   z-index: 4;
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   padding: 0;
   border: 2px solid #fffdf9;
@@ -593,9 +629,9 @@ a:focus-visible {
   padding: 0;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #f2c94c;
+  background: #287a3d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
-  color: #292a28;
+  color: #fff;
   font-size: 1.15rem;
   font-weight: 700;
   cursor: pointer;
@@ -607,7 +643,7 @@ a:focus-visible {
   z-index: 5;
   outline: 3px solid #fff;
   outline-offset: 2px;
-  background: #e6b82e;
+  background: #1d5e30;
 }
 
 .school-map-game-marker {
@@ -620,22 +656,12 @@ a:focus-visible {
   padding: 0;
   border: 2px solid #fff;
   border-radius: 50%;
+  background: #287a3d;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+  color: #fff;
   font-size: 1.2rem;
   cursor: pointer;
   touch-action: manipulation;
-}
-
-.school-map-matching-marker {
-  background: #642b35;
-}
-
-.school-map-archaeology-marker {
-  background: #287a3d;
-}
-
-.school-map-puzzle-marker {
-  background: #315d9a;
 }
 
 .school-map-game-marker:hover,
@@ -643,7 +669,7 @@ a:focus-visible {
   z-index: 5;
   outline: 3px solid #f3c969;
   outline-offset: 2px;
-  filter: brightness(1.15);
+  background: #1d5e30;
 }
 
 .school-puzzle-dialog {
@@ -727,6 +753,28 @@ a:focus-visible {
 }
 
 @media (max-width: 600px) {
+  .school-page {
+    padding-top: 0.75rem;
+  }
+
+  .school-map-status {
+    top: 64px;
+    max-width: calc(100% - 24px) !important;
+  }
+
+  .school-map-controls {
+    right: 6px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 6px;
+    justify-content: center;
+    max-width: calc(100% - 12px) !important;
+  }
+
+  .school-map-fullscreen-message {
+    bottom: 116px !important;
+    left: 8px !important;
+  }
+
   .school-map-poi[data-poi-id="legerkampen"] { left: 87% !important; top: 25% !important; }
   .school-map-poi[data-poi-id="verdediging"] { left: 61% !important; top: 72% !important; }
   .school-map-poi[data-poi-id="inrichting"] { left: 75% !important; top: 48% !important; }
@@ -749,6 +797,41 @@ a:focus-visible {
   overflow-y: auto;
   padding: 1rem;
   background: rgba(25, 28, 24, 0.72);
+}
+
+.quiz-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.quiz-confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  animation: quiz-confetti-burst 1.5s ease-out forwards;
+}
+
+@keyframes quiz-confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--confetti-x)), calc(-50% + var(--confetti-y)))
+      scale(1) rotate(540deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-confetti-piece {
+    animation-duration: 0.01ms;
+  }
 }
 
 .quiz-dialog {
@@ -1403,5 +1486,167 @@ a:focus-visible {
     flex-direction: column;
     justify-content: center;
     text-align: center;
+  }
+}
+
+@media (min-width: 1440px) {
+  .school-page {
+    width: min(1700px, calc(100% - 3rem));
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-shell {
+    width: min(1700px, calc(100% - 4rem));
+  }
+
+  .home-page {
+    padding-top: clamp(1.5rem, 3vh, 3rem);
+  }
+
+  .home-page .page-header h1 {
+    font-size: clamp(3rem, 4vw, 4.5rem);
+  }
+
+  .home-page-intro {
+    font-size: clamp(1.15rem, 1.4vw, 1.5rem);
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .slot-art {
+    min-height: clamp(170px, 20vh, 240px);
+  }
+
+  .slot-content {
+    padding: clamp(1rem, 1.4vw, 1.5rem);
+  }
+
+  .slot-content h3 {
+    font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  }
+
+  .slot-content p {
+    font-size: clamp(1rem, 1.1vw, 1.15rem);
+  }
+
+  .school-page {
+    width: min(1800px, calc(100% - 3rem));
+    padding-top: 1.5rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .slots-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .slot-art {
+    min-height: clamp(170px, 19vh, 230px);
+  }
+}
+
+@media (any-pointer: coarse) {
+  .school-map-poi {
+    width: 48px;
+    height: 48px;
+    font-size: 0.95rem;
+  }
+
+  .school-map-poi-game,
+  .school-map-quiz-marker,
+  .school-map-game-marker {
+    width: 56px;
+    height: 56px;
+  }
+
+  .school-map-controls button {
+    min-height: 60px !important;
+  }
+
+  .school-map-controls button[aria-label="Inzoomen"],
+  .school-map-controls button[aria-label="Uitzoomen"] {
+    min-width: 60px !important;
+  }
+
+  .quiz-close,
+  .mill-game-close {
+    width: 60px;
+    height: 60px;
+  }
+
+  .mill-point {
+    width: clamp(40px, 5vw, 56px);
+    height: clamp(40px, 5vw, 56px);
+  }
+
+  .mill-mode-card,
+  .quiz-answer,
+  .quiz-primary-button,
+  .school-puzzle-option,
+  .primary-button,
+  .mill-secondary-button,
+  .mill-text-button {
+    min-height: 60px;
+  }
+}
+
+@media (min-width: 1200px) and (any-pointer: coarse) {
+  .school-map-viewer {
+    border-radius: 12px;
+  }
+
+  .school-map-status,
+  .school-map-back-link,
+  .school-map-controls,
+  .school-map-fullscreen-message {
+    font-size: 1.1rem !important;
+  }
+
+  .quiz-backdrop,
+  .mill-game-backdrop {
+    padding: 2rem;
+  }
+
+  .quiz-dialog {
+    width: min(1000px, 100%);
+    max-height: 92dvh;
+    padding: 3rem;
+    border-radius: 24px;
+  }
+
+  .quiz-dialog h2,
+  .mill-game-header h2 {
+    font-size: clamp(2.2rem, 3vw, 3.2rem);
+  }
+
+  .quiz-question {
+    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
+  }
+
+  .quiz-answer,
+  .quiz-primary-button,
+  .school-puzzle-option,
+  .matching-item,
+  .matching-target,
+  .mill-mode-card,
+  .mill-secondary-button,
+  .mill-text-button {
+    min-height: 68px;
+    font-size: 1.2rem;
+  }
+
+  .mill-game {
+    width: min(1500px, 100%);
+    max-height: 92dvh;
+    padding: 3rem;
+  }
+
+  .mill-board {
+    width: min(100%, 720px);
   }
 }

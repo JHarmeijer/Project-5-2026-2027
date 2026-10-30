@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Confetti from "../Confetti";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 type Vraag = {
@@ -87,6 +88,8 @@ export default function Quiz({ onClose }: { onClose: () => void }) {
   const [gekozenAntwoord, setGekozenAntwoord] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [resultaat, setResultaat] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiPosition, setConfettiPosition] = useState<{ x: number; y: number } | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   useAccessibleDialog(true, onClose, dialogRef);
 
@@ -151,10 +154,14 @@ export default function Quiz({ onClose }: { onClose: () => void }) {
                     key={antwoord}
                     type="button"
                     className={`quiz-answer${antwoordKlasse}`}
-                    onClick={() => {
+                    onClick={(event) => {
                       if (gekozenAntwoord !== null) return;
                       setGekozenAntwoord(index);
-                      if (isGoed) setScore((huidig) => huidig + 1);
+                      if (isGoed) {
+                        setScore((huidig) => huidig + 1);
+                        setConfettiPosition({ x: event.clientX, y: event.clientY });
+                        setConfettiKey((key) => key + 1);
+                      }
                     }}
                     disabled={gekozenAntwoord !== null}
                   >
@@ -178,6 +185,9 @@ export default function Quiz({ onClose }: { onClose: () => void }) {
           </>
         )}
       </section>
+      {confettiPosition && (
+        <Confetti key={confettiKey} x={confettiPosition.x} y={confettiPosition.y} />
+      )}
     </div>
   );
 }

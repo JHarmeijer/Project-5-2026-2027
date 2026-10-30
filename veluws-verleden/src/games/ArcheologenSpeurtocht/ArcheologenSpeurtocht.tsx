@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Confetti from "../../components/Confetti";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 const opdrachten = [
@@ -48,6 +49,8 @@ export default function ArcheologenSpeurtocht({ onClose }: { onClose: () => void
   const [gekozen, setGekozen] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [klaar, setKlaar] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiPosition, setConfettiPosition] = useState<{ x: number; y: number } | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   useAccessibleDialog(true, onClose, dialogRef);
 
@@ -118,9 +121,13 @@ export default function ArcheologenSpeurtocht({ onClose }: { onClose: () => void
                     type="button"
                     className={`quiz-answer${antwoordKlasse}`}
                     disabled={gekozen !== null}
-                    onClick={() => {
+                    onClick={(event) => {
                       setGekozen(index);
-                      if (index === opdracht.juist) setScore((huidig) => huidig + 1);
+                      if (index === opdracht.juist) {
+                        setScore((huidig) => huidig + 1);
+                        setConfettiPosition({ x: event.clientX, y: event.clientY });
+                        setConfettiKey((key) => key + 1);
+                      }
                     }}
                   >
                     {optie}
@@ -139,6 +146,9 @@ export default function ArcheologenSpeurtocht({ onClose }: { onClose: () => void
           </>
         )}
       </section>
+      {confettiPosition && (
+        <Confetti key={confettiKey} x={confettiPosition.x} y={confettiPosition.y} />
+      )}
     </div>
   );
 }

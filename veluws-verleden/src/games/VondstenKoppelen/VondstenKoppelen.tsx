@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Confetti from "../../components/Confetti";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 const voorwerpen = [
@@ -19,10 +20,16 @@ export default function VondstenKoppelen({ onClose }: { onClose: () => void }) {
   const [gekoppeld, setGekoppeld] = useState<Record<string, string>>({});
   const [gekozen, setGekozen] = useState<string | null>(null);
   const [melding, setMelding] = useState("Kies een afbeelding en tik op de passende omschrijving, of sleep de afbeelding ernaartoe.");
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiPosition, setConfettiPosition] = useState<{ x: number; y: number } | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   useAccessibleDialog(true, onClose, dialogRef);
 
-  function koppel(omschrijvingId: string, voorwerpId: string | null = gekozen) {
+  function koppel(
+    omschrijvingId: string,
+    voorwerpId: string | null,
+    positie: { x: number; y: number },
+  ) {
     if (!voorwerpId || gekoppeld[omschrijvingId]) return;
     if (voorwerpId !== omschrijvingId) {
       setMelding("Dat past niet helemaal. Probeer het nog eens!");
@@ -32,6 +39,8 @@ export default function VondstenKoppelen({ onClose }: { onClose: () => void }) {
     const nieuweKoppelingen = { ...gekoppeld, [omschrijvingId]: voorwerpId };
     setGekoppeld(nieuweKoppelingen);
     setGekozen(null);
+    setConfettiPosition(positie);
+    setConfettiKey((key) => key + 1);
     setMelding(
       Object.keys(nieuweKoppelingen).length === voorwerpen.length
         ? "Alles gevonden! Je hebt alle voorwerpen goed gekoppeld."
@@ -95,13 +104,20 @@ export default function VondstenKoppelen({ onClose }: { onClose: () => void }) {
                   type="button"
                   className={`matching-target${isGekoppeld ? " is-matched" : ""}`}
                   disabled={isGekoppeld}
-                  onClick={() => koppel(omschrijving.id)}
+                  onClick={(event) => koppel(omschrijving.id, gekozen, {
+                    x: event.clientX,
+                    y: event.clientY,
+                  })}
                   onDragOver={(event) => {
                     if (!isGekoppeld) event.preventDefault();
                   }}
                   onDrop={(event) => {
                     event.preventDefault();
-                    koppel(omschrijving.id, event.dataTransfer.getData("text/plain") || gekozen);
+                    koppel(
+                      omschrijving.id,
+                      event.dataTransfer.getData("text/plain") || gekozen,
+                      { x: event.clientX, y: event.clientY },
+                    );
                   }}
                   aria-label={`Omschrijving ${index + 1}: ${omschrijving.tekst}${isGekoppeld ? ", goed gekoppeld" : ""}`}
                 >
@@ -128,6 +144,9 @@ export default function VondstenKoppelen({ onClose }: { onClose: () => void }) {
           </button>
         )}
       </section>
+      {confettiPosition && (
+        <Confetti key={confettiKey} x={confettiPosition.x} y={confettiPosition.y} />
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Confetti from "../../components/Confetti";
 import useAccessibleDialog from "../../hooks/useAccessibleDialog";
 
 const kolommen = 5;
@@ -33,22 +34,27 @@ export default function SchoolplaatPuzzel({
   });
   const [gekozen, setGekozen] = useState<number | null>(null);
   const [melding, setMelding] = useState("Kies een stukje en daarna de plek waar het moet liggen. Je kunt stukjes ook slepen.");
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiPosition, setConfettiPosition] = useState<{ x: number; y: number } | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   useAccessibleDialog(true, onClose, dialogRef);
 
   const rijen = aantal / kolommen;
   const opgelost = stukjes.every((stukje, index) => stukje === index);
 
-  function verwissel(van: number, naar: number) {
+  function verwissel(van: number, naar: number, positie: { x: number; y: number }) {
     if (van === naar) return;
     const nieuw = [...stukjes];
     [nieuw[van], nieuw[naar]] = [nieuw[naar], nieuw[van]];
     setStukjes(nieuw);
-    setMelding(
-      nieuw.every((stukje, index) => stukje === index)
-        ? "Goed gedaan! Je hebt de schoolplaatpuzzel opgelost."
-        : "Stukjes verwisseld. Ga door met puzzelen!",
-    );
+    const isOpgelost = nieuw.every((stukje, index) => stukje === index);
+    setMelding(isOpgelost
+      ? "Goed gedaan! Je hebt de schoolplaatpuzzel opgelost."
+      : "Stukjes verwisseld. Ga door met puzzelen!");
+    if (isOpgelost) {
+      setConfettiPosition(positie);
+      setConfettiKey((key) => key + 1);
+    }
     setGekozen(null);
   }
 
@@ -122,12 +128,12 @@ export default function SchoolplaatPuzzel({
                 aria-label={`Stukje hoort op rij ${rij + 1}, kolom ${kolom + 1}; ligt nu op plek ${plek + 1} van ${aantal}${gekozen === plek ? ", geselecteerd" : ""}`}
                 aria-selected={gekozen === plek}
                 draggable={!opgelost}
-                onClick={() => {
+                onClick={(event) => {
                   if (gekozen === null) {
                     setGekozen(plek);
                     setMelding(`Stukje op plek ${plek + 1} gekozen. Kies nu een ander stukje om ze te verwisselen.`);
                   } else {
-                    verwissel(gekozen, plek);
+                    verwissel(gekozen, plek, { x: event.clientX, y: event.clientY });
                   }
                 }}
                 onDragStart={(event) => {
@@ -138,7 +144,9 @@ export default function SchoolplaatPuzzel({
                 onDrop={(event) => {
                   event.preventDefault();
                   const van = Number(event.dataTransfer.getData("text/plain"));
-                  if (Number.isInteger(van) && van >= 0 && van < aantal) verwissel(van, plek);
+                  if (Number.isInteger(van) && van >= 0 && van < aantal) {
+                    verwissel(van, plek, { x: event.clientX, y: event.clientY });
+                  }
                 }}
                 style={{
                   backgroundImage: `url("${src}")`,
@@ -154,6 +162,9 @@ export default function SchoolplaatPuzzel({
           <p className="school-puzzle-complete">Puzzel opgelost! Goed gedaan!</p>
         )}
       </section>
+        {confettiPosition && (
+          <Confetti key={confettiKey} x={confettiPosition.x} y={confettiPosition.y} />
+        )}
     </div>
   );
 }
